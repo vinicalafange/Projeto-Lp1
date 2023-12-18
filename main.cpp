@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <cstdlib>
 
 using namespace std;
 
@@ -78,8 +78,8 @@ private:
     bool reservaConfirmada;
 };
 
-vector<Passageiro*> passageiros; 
-vector<Voo*> voos; 
+vector<Passageiro*> passageiros;
+vector<Voo*> voos;
 
 void reservarPassagem(Passageiro* passageiro) {
     passageiros.push_back(passageiro);
@@ -87,6 +87,14 @@ void reservarPassagem(Passageiro* passageiro) {
 
 void adicionarVoo(Voo* voo) {
     voos.push_back(voo);
+}
+
+void limparTerminal() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }
 
 void exibirPassageiros() {
@@ -152,6 +160,7 @@ int main() {
     int escolha;
 
     do {
+        limparTerminal();
         cout << "Menu:" << endl;
         cout << "1. Fazer Reserva" << endl;
         cout << "2. Conferir Reservas" << endl;
@@ -189,6 +198,7 @@ int main() {
                 } else {
                     cout << "Voo nao valido." << endl;
                 }
+
                 break;
             }
             case 2: {
@@ -214,6 +224,8 @@ int main() {
                     default:
                         cout << "Opcao invalida. Tente novamente." << endl;
                 }
+
+                limparTerminal();
                 break;
             }
             case 0:
