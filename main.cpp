@@ -37,17 +37,17 @@ public:
     Voo(string origem, string destino, int numeroAssentos)
         : origem(origem), destino(destino) {
         for (int i = 1; i <= numeroAssentos; ++i) {
-            assentos.push_back(Assento(i, true));
+            assentos.push_back(new Assento(i, true));
         }
     }
 
     string getOrigem() const { return origem; }
     string getDestino() const { return destino; }
-    const vector<Assento>& getAssentos() const { return assentos; }
+    const vector<Assento*>& getAssentos() const { return assentos; }
 
     bool reservarAssento(int numeroAssento) {
-        if (numeroAssento >= 1 && numeroAssento <= assentos.size() && assentos[numeroAssento - 1].isDisponivel()) {
-            assentos[numeroAssento - 1].reservarAssento();
+        if (numeroAssento >= 1 && numeroAssento <= assentos.size() && assentos[numeroAssento - 1]->isDisponivel()) {
+            assentos[numeroAssento - 1]->reservarAssento();
             return true;
         }
         return false;
@@ -56,7 +56,7 @@ public:
 private:
     string origem;
     string destino;
-    vector<Assento> assentos;
+    vector<Assento*> assentos;
 };
 
 class Passageiro : public Pessoa {
@@ -78,24 +78,24 @@ private:
     bool reservaConfirmada;
 };
 
-vector<Passageiro> passageiros;
-vector<Voo> voos;
+vector<Passageiro*> passageiros; 
+vector<Voo*> voos; 
 
-void reservarPassagem(const Passageiro& passageiro) {
+void reservarPassagem(Passageiro* passageiro) {
     passageiros.push_back(passageiro);
 }
 
-void adicionarVoo(const Voo& voo) {
+void adicionarVoo(Voo* voo) {
     voos.push_back(voo);
 }
 
 void exibirPassageiros() {
     cout << "Lista de Reservas:" << endl;
     for (const auto& passageiro : passageiros) {
-        cout << "Nome: " << passageiro.getNome()
-             << ", Destino: " << passageiro.getVoo().getDestino()
-             << ", Assento: " << passageiro.getNumeroAssento()
-             << ", Reserva Confirmada: " << (passageiro.getReservaConfirmada() ? "Sim" : "Não")
+        cout << "Nome: " << passageiro->getNome()
+             << ", Destino: " << passageiro->getVoo().getDestino()
+             << ", Assento: " << passageiro->getNumeroAssento()
+             << ", Reserva Confirmada: " << (passageiro->getReservaConfirmada() ? "Sim" : "Não")
              << endl;
     }
 }
@@ -103,15 +103,15 @@ void exibirPassageiros() {
 void exibirVoosDisponiveis() {
     cout << "Voos Disponíveis:" << endl;
     for (size_t i = 0; i < voos.size(); ++i) {
-        cout << i + 1 << ". Origem: " << voos[i].getOrigem() << ", Destino: " << voos[i].getDestino() << endl;
+        cout << i + 1 << ". Origem: " << voos[i]->getOrigem() << ", Destino: " << voos[i]->getDestino() << endl;
     }
 }
 
 void exibirAssentosDisponiveis(const Voo& voo) {
     cout << "Assentos Disponíveis para o Voo " << voo.getOrigem() << " - " << voo.getDestino() << ":" << endl;
     for (const auto& assento : voo.getAssentos()) {
-        if (assento.isDisponivel()) {
-            cout << "Assento " << assento.getNumero() << endl;
+        if (assento->isDisponivel()) {
+            cout << "Assento " << assento->getNumero() << endl;
         }
     }
 }
@@ -119,9 +119,9 @@ void exibirAssentosDisponiveis(const Voo& voo) {
 void exibirReservasRealizadas() {
     cout << "Reservas Realizadas:" << endl;
     for (const auto& passageiro : passageiros) {
-        cout << "Nome: " << passageiro.getNome()
-             << ", Destino: " << passageiro.getVoo().getDestino()
-             << ", Assento: " << passageiro.getNumeroAssento()
+        cout << "Nome: " << passageiro->getNome()
+             << ", Destino: " << passageiro->getVoo().getDestino()
+             << ", Assento: " << passageiro->getNumeroAssento()
              << endl;
     }
 }
@@ -131,9 +131,9 @@ void exibirReservasRealizadas(string nomePassageiro) {
 
     cout << "Reservas para o passageiro " << nomePassageiro << ":" << endl;
     for (const auto& passageiro : passageiros) {
-        if (passageiro.getNome() == nomePassageiro) {
-            cout << "Destino: " << passageiro.getVoo().getDestino()
-                << ", Assento: " << passageiro.getNumeroAssento()
+        if (passageiro->getNome() == nomePassageiro) {
+            cout << "Destino: " << passageiro->getVoo().getDestino()
+                << ", Assento: " << passageiro->getNumeroAssento()
                 << endl;
             encontrouReservas = true;
         }
@@ -145,9 +145,9 @@ void exibirReservasRealizadas(string nomePassageiro) {
 }
 
 int main() {
-    adicionarVoo(Voo("Sao Paulo", "Nova York", 10));
-    adicionarVoo(Voo("Paris", "Toquio", 15));
-    adicionarVoo(Voo("Londres", "Sydney", 12));
+    adicionarVoo(new Voo("Sao Paulo", "Nova York", 10));
+    adicionarVoo(new Voo("Paris", "Toquio", 15));
+    adicionarVoo(new Voo("Londres", "Sydney", 12));
 
     int escolha;
 
@@ -167,19 +167,19 @@ int main() {
                 cin >> indiceVoo;
 
                 if (indiceVoo >= 1 && indiceVoo <= voos.size()) {
-                    exibirAssentosDisponiveis(voos[indiceVoo - 1]);
+                    exibirAssentosDisponiveis(*(voos[indiceVoo - 1]));
                     int numeroAssento;
                     cout << "Escolha o numero do assento: ";
                     cin >> numeroAssento;
 
-                    if (voos[indiceVoo - 1].reservarAssento(numeroAssento)) {
+                    if (voos[indiceVoo - 1]->reservarAssento(numeroAssento)) {
                         string nomePassageiro;
                         cout << "Digite o nome do passageiro: ";
                         cin.ignore();
                         getline(cin, nomePassageiro);
 
-                        Passageiro novoPassageiro(nomePassageiro, voos[indiceVoo - 1], numeroAssento);
-                        novoPassageiro.confirmarReserva();
+                        Passageiro* novoPassageiro = new Passageiro(nomePassageiro, *(voos[indiceVoo - 1]), numeroAssento);
+                        novoPassageiro->confirmarReserva();
                         reservarPassagem(novoPassageiro);
 
                         cout << "Reserva feita com sucesso!" << endl;
@@ -209,7 +209,6 @@ int main() {
                         getline(cin, nomePassageiro);
 
                         exibirReservasRealizadas(nomePassageiro);
-
                         break;
                     }
                     default:
@@ -224,6 +223,14 @@ int main() {
                 cout << "Opcao invalida. Tente novamente." << endl;
         }
     } while (escolha != 0);
+
+    for (Passageiro* p : passageiros) {
+        delete p;
+    }
+
+    for (Voo* v : voos) {
+        delete v;
+    }
 
     return 0;
 }
